@@ -1,0 +1,38 @@
+import nodemailer from "nodemailer";
+
+export default defineComponent({
+  async run({ steps }) {
+
+    const { email, firstName } = steps.connection_check.$return_value;
+
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from: process.env.SMTP_USER,
+      to: email,
+      subject: "Welcome! We've Received Your Order",
+      text: `Hi ${firstName},
+
+Thank you for placing your order!
+
+We have successfully received your order and are excited to onboard you.
+
+Our team has started processing it, and we'll keep you updated.
+
+Thank you for shopping with us!
+
+Best Regards,
+Your Team`,
+    });
+
+    console.log(`Greeting email sent to ${email}`);
+  },
+});
