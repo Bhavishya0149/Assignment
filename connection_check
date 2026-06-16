@@ -1,0 +1,23 @@
+export default defineComponent({
+  async run({ steps, $ }) {
+
+    const order = steps.trigger.event.body;
+
+    const orderTags = order.tags || "";
+    const customerTags = order.customer?.tags || "";
+    const total = Number(order.total_price);
+
+    const orderHasTag = orderTags.includes("MakeOrder");
+    const customerHasTag = customerTags.includes("ColdCustomer");
+    const amountValid = total > 2500;
+
+    if (!(orderHasTag && customerHasTag && amountValid)) {
+      $.flow.exit("Conditions not satisfied.");
+    }
+
+    return {
+      email: order.customer.email,
+      firstName: order.customer.first_name
+    };
+  }
+});
